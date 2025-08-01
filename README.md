@@ -25,8 +25,8 @@ React + Vite ile geliştirildi, stil için styled-components, ses için Howler, 
 ⸻
 
 Demo
-	•	Canlı Demo: (buraya Vercel/Netlify/GitHub Pages linki)
-	•	Video Kısa Tanıtım: (opsiyonel link)
+	•	Canlı Demo: (https://github.com/Ertannur/Music-Quiz)
+	
 
 ⸻
 

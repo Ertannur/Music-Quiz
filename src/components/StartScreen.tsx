@@ -22,12 +22,12 @@ const QuizLauncher = styled.div`
     min-height: 100vh;
     justify-content: center;
     padding: 0 1rem;
-    transform: translateY(-3vh);
+    transform: translateY(-4vh);
   }
 
   @media (max-width: 600px) {
     //padding: 0 0.5rem;
-    transform: translateY(-2vh);
+    transform: translateY(-5vh);
   }
 `;
 
