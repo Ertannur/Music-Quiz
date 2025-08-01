@@ -64,7 +64,7 @@ export function QuizPage() {
       music.play();
       setMusicStarted(true);
     }
-    document.title = `${quizTitle} - Musiz Quiz`;
+    document.title = `${quizTitle} - Music Quiz`;
     // eslint-disable-next-line
   }, []);
 

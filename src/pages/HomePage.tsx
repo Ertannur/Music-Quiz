@@ -4,7 +4,7 @@ import { TopBar } from "../components/TopBar";
 
 export function HomePage() {
   useEffect(() => {
-    document.title = "Musiz Quiz - Home";
+    document.title = "Music Quiz - Home";
   }, []);
   return (
     <>
