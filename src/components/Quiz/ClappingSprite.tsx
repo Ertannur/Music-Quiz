@@ -5,18 +5,20 @@ const clapAnimation = keyframes`
   to   { background-position: -2480px 0px; }
 `;
 
-const Clapper = styled.div<{ visible: boolean }>`
+const Clapper = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "visible",
+})<{ visible: boolean }>`
   display: ${({ visible }) => (visible ? "block" : "none")};
   width: 310px;
   height: 450px;
-  background-image: url('/assets/applause_310x450_55x87offset.png');
+  background-image: url("/assets/applause_310x450_55x87offset.png");
   background-repeat: no-repeat;
   background-size: 2480px 450px;
   animation: ${clapAnimation} 0.8s steps(8) infinite;
   position: fixed;
   bottom: 1rem;
   left: 50%;
-  z-index: 1500;
+  z-index: 1200;
   transform-origin: bottom left;
   transform: translate(-25%, 0) scale(0.5);
 

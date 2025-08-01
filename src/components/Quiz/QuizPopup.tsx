@@ -1,14 +1,14 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
 import styled from "styled-components";
 import type { Question } from "../../data/questions";
 import { Timer } from "./Timer";
 import { ButtonGrid, AnswerButton, Stats } from "./styles";
+import { useQuizGame } from "../../hooks/useQuizGame";
+import { useQuizStore } from "../../stores/quizStore";
+import { TopBar } from "../TopBar";
 
-import { Howl } from "howler";
-
-const sfxCorrect = new Howl({ src: ["/assets/correct-6033.mp3"], volume: 0.7 });
-const sfxWrong = new Howl({ src: ["/assets/wrong-47985.mp3"], volume: 0.7 });
 
 type QuizPopupProps = {
   isOpen: boolean;
@@ -34,13 +34,6 @@ const BackButton = styled.button`
     background: #ff66cc;
     color: #1a1a40;
   }
-`;
-
-const TimerWrapper = styled.div`
-  position: fixed;
-  top: 1rem;
-  right: 3.5rem;
-  z-index: 1001;
 `;
 
 const GameArea = styled.div`
@@ -92,6 +85,8 @@ const GameArea = styled.div`
     margin: 16vh auto 10vh;
     width: min(85vw, 600px);
   }
+
+  
 
   @media (max-width: 600px) {
     /* Removed max-width, use width. */
@@ -145,73 +140,20 @@ export const QuizPopup: React.FC<QuizPopupProps> = ({
   questions,
   onFinish,
 }) => {
-  const shuffledQuestions = useMemo(() => {
-    const copy = [...questions];
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-  }, [questions]);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [animating, setAnimating] = useState(false);
-  const [result, setResult] = useState<"correct" | "wrong" | null>(null);
-  const [finished, setFinished] = useState(false);
+  const navigate = useNavigate();
+  const {
+    question,
+    shuffledOptions,
+    currentQuestionIndex,
+    selectedOption,
+    animating,
+    finished,
+    handleAnswer,
+    handleTimeout,
+    handleAnimationComplete,
+  } = useQuizGame({ questions, onFinish });
 
-  const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
-
-  useEffect(() => {
-    // Shuffle answer options
-    const opts = [...shuffledQuestions[currentQuestion].options];
-    for (let i = opts.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [opts[i], opts[j]] = [opts[j], opts[i]];
-    }
-    setShuffledOptions(opts);
-    // Reset selection for new question
-    setSelectedOption(null);
-  }, [currentQuestion, shuffledQuestions]);
-
-  const handleAnswer = (option: string) => {
-    if (animating) return;
-    const isCorrect = option === shuffledQuestions[currentQuestion].answer;
-    // Play sound effect for feedback
-    if (isCorrect) sfxCorrect.play();
-    else sfxWrong.play();
-    setSelectedOption(option);
-    setResult(isCorrect ? "correct" : "wrong");
-    if (isCorrect) {
-      setCorrectCount((prev) => prev + 1);
-    }
-    setAnimating(true);
-    // Automatically proceed to next question after feedback
-    setTimeout(() => {
-      handleAnimationComplete();
-    }, 800);
-  };
-
-  const handleAnimationComplete = () => {
-    const isLastQuestion = currentQuestion === shuffledQuestions.length - 1;
-    if (isLastQuestion) {
-      setFinished(true);
-      onFinish?.(); // <- Quiz bittiğinde clapping sprite’ı tetikle
-      return;
-    } else {
-      setCurrentQuestion((prev) => prev + 1);
-      setSelectedOption(null);
-      setResult(null);
-      setAnimating(false);
-    }
-  };
-
-  const handleTimeout = () => {
-    if (animating) return;
-    handleAnswer(""); // Trigger wrong animation on timeout
-  };
-
-  const question = shuffledQuestions[currentQuestion];
+  const correctCount = useQuizStore((state) => state.correctCount);
 
   return (
     <Modal
@@ -238,18 +180,16 @@ export const QuizPopup: React.FC<QuizPopupProps> = ({
         <>
           <ResultContainer>
             <h2>Quiz Tamamlandı!</h2>
-            <p>
-              Doğru sayısı: {correctCount} / {shuffledQuestions.length}
-            </p>
             <ResultButton onClick={onClose}>Tamam</ResultButton>
           </ResultContainer>
         </>
       )}
       {!finished && (
         <>
-          <TimerWrapper>
-            {!animating && <Timer duration={60} onExpire={handleTimeout} />}
-          </TimerWrapper>
+          <TopBar rightExtras={
+            !animating ? <Timer duration={60} onExpire={handleTimeout} /> : null
+            }
+          />
           <GameArea>
             <BackButton onClick={onClose}>BACK</BackButton>
             <h2>{question.question}</h2>
@@ -269,7 +209,7 @@ export const QuizPopup: React.FC<QuizPopupProps> = ({
             <Stats>
               <span>✔️ {correctCount}</span>
               <span>
-                {currentQuestion + 1}/{shuffledQuestions.length}
+                {currentQuestionIndex + 1}/{questions.length}
               </span>
             </Stats>
           </GameArea>
