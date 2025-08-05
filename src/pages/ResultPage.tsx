@@ -3,7 +3,6 @@ import { ClappingSprite } from "../components/Quiz/ClappingSprite";
 import { useNavigate } from "react-router-dom";
 import { useQuizStore } from "../stores/quizStore";
 import styled from "styled-components";
-import { useRef } from "react";
 import { useMediaQuery } from "react-responsive";
 import { TopBar } from "../components/TopBar";
 

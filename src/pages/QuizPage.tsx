@@ -1,7 +1,7 @@
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
 import { useLocation, useNavigate } from "react-router-dom";
 import { QuizPopup } from "../components/Quiz/QuizPopup";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuizStore } from "../stores/quizStore";
 import { music } from "../components/Quiz/MusicPlayer";
 import {

@@ -140,7 +140,6 @@ export const QuizPopup: React.FC<QuizPopupProps> = ({
   questions,
   onFinish,
 }) => {
-  const navigate = useNavigate();
   const {
     question,
     shuffledOptions,
@@ -150,7 +149,6 @@ export const QuizPopup: React.FC<QuizPopupProps> = ({
     finished,
     handleAnswer,
     handleTimeout,
-    handleAnimationComplete,
   } = useQuizGame({ questions, onFinish });
 
   const correctCount = useQuizStore((state) => state.correctCount);
